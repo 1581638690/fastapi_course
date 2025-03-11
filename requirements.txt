@@ -3,3 +3,6 @@ uvicorn
 psycopg2
 sqlalchemy
 sqlmodel
+email-validator
+passlib
+bcrypt

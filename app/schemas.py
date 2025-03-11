@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,EmailStr
 from datetime import datetime
 
 # 创建创建数据基础模型
@@ -25,3 +25,15 @@ class Post(BaseModel):
     created_at:datetime
     class Config:
         from_attributes = True
+
+# 创建用户模型pandic
+class UserOut(BaseModel):
+    id:int
+    email:EmailStr
+    created_at:datetime
+    class Config:
+        from_attributes = True
+
+class UserCreate(BaseModel):
+    email:EmailStr
+    password:str
