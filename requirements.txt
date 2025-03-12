@@ -6,3 +6,5 @@ sqlmodel
 email-validator
 passlib
 bcrypt
+pyjwt
+python-multipart

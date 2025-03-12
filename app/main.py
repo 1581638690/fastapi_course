@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from psycopg2.extras import RealDictCursor
-from .router import user,post
+from .router import user,post,auth
 from .database import engine
 from . import models
 import psycopg2
@@ -29,8 +29,7 @@ app = FastAPI()
 
 app.include_router(user.router)
 app.include_router(post.router)
-
-
+app.include_router(auth.router)
 
 if __name__ == "__main__":
     import uvicorn

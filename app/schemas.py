@@ -1,5 +1,6 @@
 from pydantic import BaseModel,EmailStr
 from datetime import datetime
+from typing import Optional
 
 # 创建创建数据基础模型
 class PostBase(BaseModel):
@@ -37,3 +38,15 @@ class UserOut(BaseModel):
 class UserCreate(BaseModel):
     email:EmailStr
     password:str
+
+
+# 创建用户登录模型
+
+class UserLogin(BaseModel):
+    email:EmailStr
+    password:str
+
+
+# 创建用户登录模型
+class TokenData(BaseModel):
+    id: Optional[str] = None
