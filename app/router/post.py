@@ -12,14 +12,13 @@ router = APIRouter(
 @router.get("/",response_model = List[schemas.Post])
 def get_post(db:Session = Depends(get_db),current_user: int = Depends(oauth2.get_current_user)):
     # 使用orm查询数据库表
-    posts = db.query(models.Post).all()
+    posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
     return posts
 
 # 创建接口
 @router.post("/",response_model=schemas.Post)
 def create_post(post :schemas.PostCreate,db:Session = Depends(get_db),current_user: int = Depends(oauth2.get_current_user)):
     # 使用orm创建数据信息
-    print(current_user)
     posts = models.Post(title= post.title,content=post.content,published=post.published,owner_id=current_user.id)
     db.add(posts)
     db.commit()
@@ -30,7 +29,7 @@ def create_post(post :schemas.PostCreate,db:Session = Depends(get_db),current_us
 @router.get("/{id}",response_model=schemas.Post,)
 def get_one_post(id:int,response:Response,db:Session = Depends(get_db),current_user: int = Depends(oauth2.get_current_user)):
     # 使用orm查看单独数据信息
-    post = db.query(models.Post).filter(models.Post.id == id).first()
+    post = db.query(models.Post).filter(models.Post.id == id and models.Post.owner_id==current_user.id).first()
     if not post:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {"data":"post not found"}
