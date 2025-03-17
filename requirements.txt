@@ -5,6 +5,7 @@ sqlalchemy
 sqlmodel
 email-validator
 passlib
-bcrypt
+bcrypt=3.2.2
 pyjwt
 python-multipart
+alembic

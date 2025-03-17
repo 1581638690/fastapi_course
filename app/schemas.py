@@ -24,6 +24,7 @@ class Post(BaseModel):
     content:str
     published:bool = True
     created_at:datetime
+    owner_id :int
     class Config:
         from_attributes = True
 
@@ -49,4 +50,9 @@ class UserLogin(BaseModel):
 
 # 创建用户登录模型
 class TokenData(BaseModel):
-    id: Optional[str] = None
+    id: Optional[int] = None
+
+# 创建token模型
+class Token(BaseModel):
+    access_token:str
+    token_type:str
