@@ -1,18 +1,19 @@
 from fastapi import FastAPI, HTTPException,Response,status,Depends,APIRouter
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List,Optional
 from ..database import get_db
 from .. import oauth2,models,schemas
 # 创建路由，并设置前缀
 router = APIRouter(
     prefix= "/post"
 )
-
 #  查询接口
 @router.get("/",response_model = List[schemas.Post])
-def get_post(db:Session = Depends(get_db),current_user: int = Depends(oauth2.get_current_user)):
-    # 使用orm查询数据库表
-    posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
+def get_post(db:Session = Depends(get_db),current_user: int = Depends(oauth2.get_current_user),limit:int =10,skip:int=0,search:Optional[str]=""):
+    # 使用orm查询所有数据库表
+    #posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
+    posts =db.query(models.Post).filter(models.Post.owner_id == current_user.id,
+                                        models.Post.title.contains(search)).limit(limit).all()
     return posts
 
 # 创建接口
