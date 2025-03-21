@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException,Response,status,Depends,APIRouter
+from fastapi import Response,status,Depends,APIRouter
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List,Optional
 from ..database import get_db
@@ -8,13 +9,17 @@ router = APIRouter(
     prefix= "/post"
 )
 #  查询接口
-@router.get("/",response_model = List[schemas.Post])
+@router.get("/",response_model = List[schemas.postOut])
 def get_post(db:Session = Depends(get_db),current_user: int = Depends(oauth2.get_current_user),limit:int =10,skip:int=0,search:Optional[str]=""):
     # 使用orm查询所有数据库表
     #posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
     posts =db.query(models.Post).filter(models.Post.owner_id == current_user.id,
                                         models.Post.title.contains(search)).limit(limit).all()
-    return posts
+    #  使用orm查询所有的帖子，并且带有点赞数 需要展示出来
+    votes_posts = db.query(models.Post,func.count(models.Vote.post_id).label("votes")).join(models.Vote,models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.owner_id == current_user.id,
+                                        models.Post.title.contains(search)).limit(limit).all()
+    
+    return votes_posts
 
 # 创建接口
 @router.post("/",response_model=schemas.Post)
@@ -27,10 +32,10 @@ def create_post(post :schemas.PostCreate,db:Session = Depends(get_db),current_us
     return posts
 
 # 查看单独接口
-@router.get("/{id}",response_model=schemas.Post,)
+@router.get("/{id}",response_model=schemas.postOut)
 def get_one_post(id:int,response:Response,db:Session = Depends(get_db),current_user: int = Depends(oauth2.get_current_user)):
     # 使用orm查看单独数据信息
-    post = db.query(models.Post).filter(models.Post.id == id and models.Post.owner_id==current_user.id).first()
+    post = db.query(models.Post,func.count(models.Vote.post_id).label("votes")).join(models.Vote,models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.id == id and models.Post.owner_id==current_user.id).first()
     if not post:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {"data":"post not found"}

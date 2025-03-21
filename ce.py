@@ -12,25 +12,27 @@ def session_retrieval1(user_dic,users,m_acc,result):
             return user_dic, account,users,"",m_acc
         for http_pos, action_value in data.items():
             for action, value_lst in action_value.items():
-                if "会话ID" not in value_lst or "账户名" not in value_lst:
-                    # 如果不存在就可能存在两个合并接口的账户 或者是没有标注，可以等待一会
-                    for name,value in value_lst.items():
-                        m_acc[name] = value[0]
-                else:
-                    for name, value in value_lst.items():
+                for name, value in value_lst.items():
                         if name != "会话ID":
                             if len(value) >= 1:
                                 user_infos[name] = value[0]
                         else:
                             token_container = value
-        if len(m_acc) ==2:
-            # 如果是两个数据就表明账户跟会话ID都存储完毕，然后往最终字典靠拢
-            for name,value in m_acc.items():
-                if name!="会话ID":
-                    user_infos[name]=value
-                else:
-                    token_container.append(value)
-            m_acc = {}
+                # 多接口识别数据
+        if not user_infos or not token_container:
+            # 如果这两个任何一个不存在就可能存在两个合并接口的账户 或者是没有标注，可以等待一会
+            if user_infos:
+                m_acc["账户名"] = user_infos["账户名"]
+            if token_container:
+                m_acc["会话ID"] = token_container[0]
+            if len(m_acc) ==2:
+                # 如果是两个数据就表明账户跟会话ID都存储完毕，然后往最终字典靠拢
+                for name,value in m_acc.items():
+                    if name!="会话ID":
+                        user_infos[name]=value
+                    else:
+                        token_container.append(value)
+                m_acc = {}
         user_infos["date"] = datetime.datetime.now()
         if token_container:
             for jsessionid in token_container:
@@ -61,8 +63,9 @@ if __name__ == "__main__":
     users = {}
     m_acc = {}
     res_list = [
-
+        
         {'data': {'response_headers': {'操作': {'账户名': ['superFBI']}}}, 'label_info': {'日志类型': '账号登录'}, 'map_tree': None},
+        {'data': {'response_headers': {'操作': {'账户名': ['rzc']},"返回结果":{'会话ID': ['f376adbfb64f9ea8df8f44c7ebdadadadafafafa']}}}, 'label_info': {'日志类型': '账号登录'}, 'map_tree': None},
         {'data': {'response_headers': {'返回结果': {'会话ID': ['f376adbfb64f9ea8df8f44c7ebfab993']}}}, 'label_info': {'日志类型': '账号登录'}, 'map_tree': None}    ]
     for res in res_list:
         user_dic, account,users,sessid,m_acc = session_retrieval1(user_dic,users,m_acc,res)

@@ -1,4 +1,5 @@
-from pydantic import BaseModel,EmailStr
+from pydantic import BaseModel,EmailStr,Field
+from pydantic.types import conint # 限制数据类型
 from datetime import datetime
 from typing import Optional
 
@@ -59,3 +60,14 @@ class TokenData(BaseModel):
 class Token(BaseModel):
     access_token:str
     token_type:str
+
+# 创建投票模型
+class Vote(BaseModel):
+    post_id:int
+    dir:int = Field(le=1)# 限制数据类型
+
+class postOut(BaseModel):
+    Post:Post
+    votes:int
+    class Config:
+        orm_mode = True
