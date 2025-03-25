@@ -20,6 +20,7 @@ def create_access_token(data:dict,expires_delta:timedelta=None):
     encoded_jwt = jwt.encode(to_data,SECRET_KEY,algorithm=ALGORITHM)
     return encoded_jwt
 
+
 # 解析token 获取用户信息
 def verify_access_token(token:str,credentials_exception):
     try:
