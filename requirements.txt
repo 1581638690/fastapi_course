@@ -5,8 +5,9 @@ sqlalchemy
 sqlmodel
 email-validator
 passlib
-bcrypt=3.2.2
+bcrypt==3.2.2
 pyjwt
 python-multipart
 alembic
 pydantic-settings
+gunicorn

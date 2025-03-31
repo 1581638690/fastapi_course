@@ -1,0 +1,16 @@
+[Unit]
+Description = FastAPI Service
+After = network.target
+
+[Service]
+User=zhds
+Group=zhds
+WorkingDirectory=/opt/app/src/
+EnvironmentFile=/home/zhds/.env
+Environment="PATH=/opt/app/api_cor/bin"
+ExecStart=/opt/app/api_cor/bin/gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8081
+Restart=always
+RestartSec =5
+
+[Install]
+WantedBy=multi-user.target
