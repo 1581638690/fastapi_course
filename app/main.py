@@ -27,6 +27,10 @@ app.include_router(post.router)
 app.include_router(auth.router)
 app.include_router(vote.router)
 
+@app.get("/")
+def main():
+    return "welcome to my world asdsdad dadadada"
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app,host="127.0.0.1",port=8000)
